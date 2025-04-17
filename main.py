@@ -13,7 +13,4 @@ if __name__ == "__main__":
         )
     final_state = graph.invoke(initial_state)
 
-    print("Analysis result\n")
-    print(final_state["analysis"])
-
 
