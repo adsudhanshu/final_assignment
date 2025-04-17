@@ -1,3 +1,6 @@
+import os
+import re
+from pathlib import Path
 from graph_config.model import GraphState
 from langchain_core.prompts import ChatPromptTemplate
 from tools.analyze_srs import llm
@@ -19,7 +22,28 @@ def generate_backend_code(state:GraphState)->GraphState:
     code_output = chain.invoke({"analysis":state.analysis})
 
     print("Generated_code",code_output)
+     
+     # Create test folder
+    project_dir = Path("./generated_project/app")
+    project_dir.mkdir(parents=True, exist_ok=True)
 
-    state.generated_code = code_output
+    # Parse markdown and extract each test file
+    pattern = r"\*\*(\w+\.py)\*\*\s*```(?:python)?(.*?)```"
+    matches = re.findall(pattern, code_output, re.DOTALL)
+
+    generated_code_dict = {}
+
+    for filename, code in matches:
+        filepath = project_dir / filename
+        cleaned_code = code.strip()
+
+        with open(filepath, "w") as f:
+            f.write(cleaned_code)
+
+        generated_code_dict[filename] = cleaned_code
+        print(f"📁 Saved code: {filepath}")
+
+    state.generated_code = generated_code_dict
+
     return state
     
