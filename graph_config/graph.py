@@ -9,6 +9,7 @@ from tools.automated_validation import automated_validation_node
 from tools.deployment import ZipGeneratedProjectNode
 from persistence.crud import save_graph_state
 from tools.generate_visual import generate_graphviz_visualization
+from tools.generate_document import generate_readme_tool
 
 def build_analysis_graph():
     graph = StateGraph(GraphState)
@@ -33,6 +34,9 @@ def build_analysis_graph():
     generate_visual = RunnableLambda(generate_graphviz_visualization)
     graph.add_node("GenerateViz",generate_visual)
 
+    generate_readme = RunnableLambda(generate_readme_tool)
+    graph.add_node("GenerateReadme",generate_readme)
+
     graph.set_entry_point("AnalyzeSRS")
     graph.add_edge("AnalyzeSRS","ProjectSetup")
     graph.add_edge("ProjectSetup","generate_unit_test")
@@ -40,6 +44,7 @@ def build_analysis_graph():
     graph.add_edge("generate_backend_code","PersistentGraphState")
     graph.add_edge("PersistentGraphState","ZipGeneratedProject")
     graph.add_edge("ZipGeneratedProject","GenerateViz")
-    graph.add_edge("GenerateViz",END)
+    graph.add_edge("GenerateViz","GenerateReadme")
+    graph.add_edge("GenerateReadme",END)
     # graph.add_edge("automated_validation",END)
     return graph.compile()
