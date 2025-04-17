@@ -11,3 +11,6 @@ class GraphState(BaseModel):
     generated_code:Optional[Dict[str,str]]=None
     test_results:Optional[str]=None
     debug_logs:Optional[str]=None
+    metadata:Optional[str]=None
+
+

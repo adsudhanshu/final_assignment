@@ -1,9 +1,12 @@
+import os
+import hashlib
 import re
 from pathlib import Path
 from graph_config.model import GraphState
 from langchain_core.prompts import ChatPromptTemplate
 from tools.analyze_srs import llm
 from langchain_core.output_parsers import StrOutputParser
+from persistence.crud import save_graph_state,load_graph_state_by_hash
 
 def generate_backend_code(state:GraphState)->GraphState:
     """Generate FastAPi backend code (models, routes, services ,main and other configuration files) based on the srs analysis"""
@@ -11,14 +14,24 @@ def generate_backend_code(state:GraphState)->GraphState:
     if not state.analysis:
         raise ValueError("Error  in the Srs analysis")
     
+    srs_hash = hashlib.sha256(state.analysis.encode()).hexdigest()
+
+    # 🔁 Check if state already exists
+    previous = load_graph_state_by_hash(srs_hash)
+    if previous:
+        print("🔁 Reusing previously generated GraphState")
+        state.generated_code = previous.generated_code
+        return state
+    
+
     prompt=ChatPromptTemplate.from_messages([
         ("system","You are a senior backend developer. Generate the fast Api code adhering to modular approach and best coding practices and also error handling, proper log generation."),
-        ("user","Based on the following requirements, generate complete code for : - Pydantic models , -SqlAlchemy , -Api routes , -ServiceLayer logic and other main configurations . Requirements: {analysis}")
+        ("user","Based on the following requirements, generate complete code for : - Pydantic models , -SqlAlchemy , -Api routes , -ServiceLayer logic and other main configurations . Requirements: {analysis} and Unit-Test:{unitTest}")
      ])
     
     chain = prompt| llm | StrOutputParser()
 
-    code_output = chain.invoke({"analysis":state.analysis})
+    code_output = chain.invoke({"analysis":state.analysis,"unitTest":state.unit_test})
 
     print("Generated_code",code_output)
      
@@ -31,7 +44,7 @@ def generate_backend_code(state:GraphState)->GraphState:
     matches = re.findall(pattern, code_output, re.DOTALL)
 
     if not matches:
-        raise ValueError("❌ No matches found in the generated code!")
+        raise ValueError(" No matches found in the generated code!")
 
     generated_code_dict = {}
 
@@ -43,7 +56,8 @@ def generate_backend_code(state:GraphState)->GraphState:
             f.write(code.strip())
 
         generated_code_dict[file_path] = code.strip()
-        print(f"✅ Saved: {full_path}")
+        print(f"Saved: {full_path}")
 
+    save_graph_state(srs_hash,generated_code_dict)
     state.generated_code = generated_code_dict
     return state

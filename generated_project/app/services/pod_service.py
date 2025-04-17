@@ -1,5 +1,4 @@
 from database import get_db
-from generated_project.app.schemas.pod import PodMember
 from models import Pod
 from schemas import PodResponse
 

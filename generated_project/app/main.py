@@ -1,14 +1,33 @@
 from fastapi import FastAPI
-from routers import leave_router, pod_router, tile_router, auth_router
-from auth import get_current_user
+from fastapi.responses import JSONResponse
+from fastapi.requests import Request
+from fastapi.security.utils import get_authorization_scheme_param
+from fastapi.security.oauth2 import OAuth2PasswordBearer
+from fastapi.security.utils import get_authorization_scheme_param
+from starlette.status import HTTP_401_UNAUTHORIZED
+from app.config import settings
+from app.utils import generate_token
+from app.models import User
+from app.services import lms_service, pods_service, dashboard_service, auth_service
 
-app = FastAPI()
+app = FastAPI(title="Leave Management System", version="1.0")
 
-app.include_router(leave_router)
-app.include_router(pod_router)
-app.include_router(tile_router)
-app.include_router(auth_router)
+@app.exception_handler(Exception)
+async def exception_handler(request: Request, exc: Exception):
+    return JSONResponse(status_code=500, content={"error": str(exc)})
 
-@app.get("/api/auth/user")
-async def get_current_user_info(current_user: User = Depends(get_current_user)):
-    return current_user
+@app.middleware("http")
+async def add_process_time_header(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Process-Time"] = str(response.headers.get("X-Process-Time", ""))
+    return response
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
+
+@app.on_event("startup")
+async def startup_event():
+    await auth_service.create_admin_user()
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    pass

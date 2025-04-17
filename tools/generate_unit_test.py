@@ -23,7 +23,7 @@ def generate_unit_tests(state:GraphState)->GraphState:
     print("LLm generating unit test")
     test_code = chain.invoke({"analysis":state.analysis})
 
-    print("✅ Unit tests generated.")
+    print("Unit tests generated.")
 
     # Create test folder
     test_dir = Path("./generated_project/tests")
@@ -43,7 +43,7 @@ def generate_unit_tests(state:GraphState)->GraphState:
             f.write(cleaned_code)
 
         unit_test_dict[filename] = cleaned_code
-        print(f"📁 Saved test: {filepath}")
+        print(f"Saved test: {filepath}")
 
     state.unit_test = unit_test_dict
     return state

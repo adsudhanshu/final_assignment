@@ -63,7 +63,8 @@ def generate_requirements_txt(project_root):
         "sqlalchemy",
         "psycopg2",
         "alembic",
-        "python-dotenv"
+        "python-dotenv",
+        "pytest"
     ]
     
     with open(os.path.join(project_root, "requirements.txt"), "w") as f:
