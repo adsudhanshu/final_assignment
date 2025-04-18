@@ -14,7 +14,7 @@ from tools.generate_document import generate_readme_tool
 
 def build_analysis_graph(srs_file_path):
     graph = StateGraph(GraphState)
-    analyze_node = RunnableLambda(analyze_srs_node, args=[srs_file_path])
+    analyze_node = RunnableLambda(lambda state:analyze_srs_node(state))
     graph.add_node("AnalyzeSRS", analyze_node)
 
     project_setup_node = RunnableLambda(project_setup_chain)
