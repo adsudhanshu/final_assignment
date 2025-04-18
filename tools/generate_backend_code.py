@@ -7,6 +7,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from tools.analyze_srs import llm
 from langchain_core.output_parsers import StrOutputParser
 from persistence.crud import save_graph_state,load_graph_state_by_hash
+import json
 
 def generate_backend_code(state:GraphState)->GraphState:
     """Generate FastAPi backend code (models, routes, services ,main and other configuration files) based on the srs analysis"""
@@ -16,12 +17,12 @@ def generate_backend_code(state:GraphState)->GraphState:
     
     srs_hash = hashlib.sha256(state.analysis.encode()).hexdigest()
 
-    # 🔁 Check if state already exists
+    generated_code_dict = {}
+    # Check if state already exists
     previous = load_graph_state_by_hash(srs_hash)
     if previous:
         print("🔁 Reusing previously generated GraphState")
-        state.generated_code = previous.generated_code
-        return state
+        print(previous.components)
     
 
     prompt=ChatPromptTemplate.from_messages([
@@ -46,8 +47,6 @@ def generate_backend_code(state:GraphState)->GraphState:
     if not matches:
         raise ValueError(" No matches found in the generated code!")
 
-    generated_code_dict = {}
-
     for file_path, code in matches:
         full_path = project_dir / file_path
         full_path.parent.mkdir(parents=True, exist_ok=True)
@@ -58,6 +57,6 @@ def generate_backend_code(state:GraphState)->GraphState:
         generated_code_dict[file_path] = code.strip()
         print(f"Saved: {full_path}")
 
-    save_graph_state(srs_hash,generated_code_dict)
+    # save_graph_state(srs_hash=srs_hash,generated_code=generated_code_dict)
     state.generated_code = generated_code_dict
     return state

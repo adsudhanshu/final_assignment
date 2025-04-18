@@ -3,7 +3,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String,JSON,DateTime
+from sqlalchemy import Column, String,DateTime
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.ext.declarative import declarative_base
 import datetime
 
@@ -15,7 +16,7 @@ class PersistentGraphState(Base):
     id= Column(String, primary_key=True)
     timestamp=Column(DateTime,default = datetime.datetime.utcnow)
     srs_hash=Column(String)
-    components =Column(JSON)
+    components =Column(JSONB)
 
 
 DATABASE_URL= os.getenv("DATABASE_URL")

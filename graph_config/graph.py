@@ -29,7 +29,7 @@ def build_analysis_graph():
     graph.add_node("PersistentGraphState",persistence_node)
 
     zip_node = ZipGeneratedProjectNode(zip_filename='generated_project')
-    graph.add_node("ZipGeneratedProject", zip_node.execute)
+    graph.add_node("ZipGeneratedProject", RunnableLambda(lambda input,config=None:zip_node.execute(input)))
 
     generate_visual = RunnableLambda(generate_graphviz_visualization)
     graph.add_node("GenerateViz",generate_visual)
@@ -41,8 +41,8 @@ def build_analysis_graph():
     graph.add_edge("AnalyzeSRS","ProjectSetup")
     graph.add_edge("ProjectSetup","generate_unit_test")
     graph.add_edge("generate_unit_test","generate_backend_code")
-    graph.add_edge("generate_backend_code","PersistentGraphState")
-    graph.add_edge("PersistentGraphState","ZipGeneratedProject")
+    # graph.add_edge("generate_backend_code","PersistentGraphState")
+    graph.add_edge("generate_backend_code","ZipGeneratedProject")
     graph.add_edge("ZipGeneratedProject","GenerateViz")
     graph.add_edge("GenerateViz","GenerateReadme")
     graph.add_edge("GenerateReadme",END)

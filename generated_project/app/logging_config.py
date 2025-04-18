@@ -1,7 +1,6 @@
-import logging
-from logging.config import dictConfig
+import logging.config
 
-LOGGING_CONFIG = {
+logging.config.dictConfig({
     "version": 1,
     "formatters": {
         "default": {
@@ -23,8 +22,6 @@ LOGGING_CONFIG = {
         "app": {
             "handlers": ["console", "file"],
             "level": "DEBUG",
-        }
-    }
-}
-
-dictConfig(LOGGING_CONFIG)
+        },
+    },
+})

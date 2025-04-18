@@ -3,10 +3,10 @@ import os
 
 # Define the zip functionality
 class ZipGeneratedProjectNode:
-    def __init__(self, zip_filename='generated_project'):
+    def __init__(self, zip_filename='generated_project',config=None):
         self.zip_filename = zip_filename
     
-    def execute(self):
+    def execute(self,input,config=None):
         # Navigate to the root directory from the 'tools' directory
         project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))  # Go up one level
         
@@ -17,4 +17,4 @@ class ZipGeneratedProjectNode:
         shutil.make_archive(self.zip_filename, 'zip', project_root, 'generated_project')
         
         print(f"Project zipped to: {self.zip_filename}.zip")
-        return f"{self.zip_filename}.zip"  
+        return input  

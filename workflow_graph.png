@@ -1,0 +1,23 @@
+// LangGraph Workflow
+digraph {
+	rankdir=LR size=10
+	A [label="Analyze SRS"]
+	B [label="Project Setup"]
+	C [label="Generate Unit Tests"]
+	D [label="Generate Backend Code"]
+	E [label="Persist Graph State"]
+	F [label="Generate Zip File"]
+	G [label="Generate README.md"]
+	H [label="Generate API Docs"]
+	I [label="Generate Workflow Graph"]
+	END [label=End]
+	A -> B
+	B -> C
+	C -> D
+	D -> E
+	E -> F
+	F -> G
+	G -> H
+	H -> I
+	I -> END
+}

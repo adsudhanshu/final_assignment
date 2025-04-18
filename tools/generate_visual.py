@@ -4,7 +4,7 @@ from graphviz import Digraph
 import os
 
 def generate_graphviz_visualization(graph_state):
-    project_root = graph_state.project_path
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
     dot = Digraph(comment="LangGraph Workflow")
     dot.attr(rankdir='LR', size='10')
 
@@ -32,7 +32,7 @@ def generate_graphviz_visualization(graph_state):
         ("H", "I"),
         ("I", "END")
     ])
-
+    print(project_root)
     png_path = os.path.join(project_root, "workflow_graph.png")
     dot.render(png_path, format="png", cleanup=True)
 

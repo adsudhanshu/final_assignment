@@ -1,6 +1,6 @@
 import pytest
 from app.lms.models import Leave, LeaveRequest
-from app.lms.schemas import LeaveRequestCreate
+from app.lms.schemas import LeaveCreate
 
 @pytest.mark.usefixtures("client")
 class TestLeaveManagementSystem:

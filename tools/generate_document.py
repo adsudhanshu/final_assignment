@@ -1,8 +1,7 @@
 # tools/generate_readme.py
 
 from langchain_core.runnables import Runnable
-from langchain_core.messages import AIMessage, HumanMessage
-from langchain_core.language_models.chat_models import ChatOpenAI  # or any other LLM
+from langchain_core.messages import AIMessage, HumanMessage 
 from tools.analyze_srs import llm
 
 # Optional: LangGraph-compatible tool
