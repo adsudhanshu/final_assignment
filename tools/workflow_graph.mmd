@@ -1,0 +1,10 @@
+flowchart LR
+    A[Analyze SRS] --> B[Project Setup]
+    B --> C[Generate Unit Tests]
+    C --> D[Generate Backend Code]
+    D --> E[Persist Graph State]
+    E --> F[Generate Zip File]
+    F --> G[Generate README.md]
+    G --> H[Generate API Docs]
+    H --> I[Generate Workflow Graph]
+    I --> END([End])

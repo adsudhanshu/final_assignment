@@ -1,20 +1,20 @@
 from fastapi import APIRouter, Depends
 from app.services import pods_service
-from app.schemas import PodCreate, PodMemberCreate
+from app.schemas import PodCreate
 
-router = APIRouter()
+router = APIRouter(prefix="/pods", tags=["Pods"])
 
 @router.post("/assign")
 async def assign_employee_to_pod(pod_data: PodCreate):
-    pod = pods_service.assign_employee_to_pod(pod_data)
-    return {"id": pod.id}
+    # Assign employee to pod logic
+    pass
 
 @router.get("/members")
-async def retrieve_pod_members(pod_id: int):
-    pod_members = pods_service.retrieve_pod_members(pod_id)
-    return pod_members
+async def retrieve_pod_members():
+    # Retrieve pod members logic
+    pass
 
 @router.post("/recommend")
 async def recommend_employees_for_pods(employee_ids: List[int]):
-    pods_service.recommend_employees_for_pods(employee_ids)
-    return {"message": "Employees recommended for pods"}
+    # Recommend employees for pods logic
+    pass

@@ -1,39 +1,46 @@
-from graph_config.model import GraphState
-from typing import Dict
-from graphviz import Digraph
 import os
+import subprocess
 
-def generate_graphviz_visualization(graph_state):
-    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__),".."))
-    dot = Digraph(comment="LangGraph Workflow")
-    dot.attr(rankdir='LR', size='10')
+def generate_mermaid_visualization_png(graph_state):
+    # Set the root directory of your project, not the generated_project folder
+    project_root = os.path.abspath(os.path.dirname(__file__))  # The directory where your script is located
 
-    # Define nodes
-    dot.node("A", "Analyze SRS")
-    dot.node("B", "Project Setup")
-    dot.node("C", "Generate Unit Tests")
-    dot.node("D", "Generate Backend Code")
-    dot.node("E", "Persist Graph State")
-    dot.node("F", "Generate Zip File")
-    dot.node("G", "Generate README.md")
-    dot.node("H", "Generate API Docs")
-    dot.node("I", "Generate Workflow Graph")
-    dot.node("END", "End")
+    # Mermaid diagram code
+    mermaid_code = """
+flowchart LR
+    A[Analyze SRS] --> B[Project Setup]
+    B --> C[Generate Unit Tests]
+    C --> D[Generate Backend Code]
+    D --> E[Persist Graph State]
+    E --> F[Generate Zip File]
+    F --> G[Generate README.md]
+    G --> H[Generate API Docs]
+    H --> I[Generate Workflow Graph]
+    I --> END([End])
+    """.strip()
 
-    # Define edges
-    dot.edges([
-        ("A", "B"),
-        ("B", "C"),
-        ("C", "D"),
-        ("D", "E"),
-        ("E", "F"),
-        ("F", "G"),
-        ("G", "H"),
-        ("H", "I"),
-        ("I", "END")
-    ])
-    print(project_root)
+    # Save the .mmd file in the root project directory
+    mmd_path = os.path.join(project_root, "workflow_graph.mmd")
+    with open(mmd_path, "w", encoding="utf-8") as f:
+        f.write(mermaid_code)
+
+    # Path where the PNG file will be saved (in root project directory)
     png_path = os.path.join(project_root, "workflow_graph.png")
-    dot.render(png_path, format="png", cleanup=True)
 
-    return {"message":"Workflow graph saved", "path":f"{png_path}.png"}
+    # Generate PNG using Mermaid CLI (mmdc)
+    try:
+        subprocess.run([
+            "mmdc",
+            "-i", mmd_path,
+            "-o", png_path,
+            "-t", "default"
+        ], check=True)
+        return {
+            "message": "Mermaid diagram saved as PNG in the root project directory",
+            "path": png_path
+        }
+    except subprocess.CalledProcessError as e:
+        return {
+            "error": "Failed to generate PNG. Is mermaid-cli (mmdc) installed?",
+            "details": str(e)
+        }

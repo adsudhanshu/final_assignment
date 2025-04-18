@@ -9,6 +9,7 @@ def client():
 
 @pytest.fixture
 def authenticated_client(user):
+    # Set up authenticated client with JWT token
     token = user.generate_token()
     client = TestClient(app)
     client.headers.update({"Authorization": f"Bearer {token}"})
