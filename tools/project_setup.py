@@ -9,19 +9,19 @@ import time
 def project_setup_chain(inputs):
     project_root = inputs.project_root
 
-    # Step 1: Create the folder structure
+    #  Create the folder structure
     create_project_structure(project_root)
 
-    # Step 2: Set up the virtual environment and install dependencies
+    # Set up the virtual environment and install dependencies
     setup_virtual_environment(project_root)
 
-    # Step 3: Set up PostgreSQL with Podman container
+    #  Set up PostgreSQL with Podman container
     setup_postgresql_with_podman()
 
-    # Step 4: Set up the .env file with database connection string
+    #  Set up the .env file with database connection string
     setup_env_file(project_root)
 
-    # Step 5: Set up database connection with SQLAlchemy
+    #  Set up database connection with SQLAlchemy
     session_local = setup_database_connection()
 
     test_database_connection(session_local)
@@ -29,7 +29,6 @@ def project_setup_chain(inputs):
     return {"status": "success", "message": "Project setup complete!"}
 
 
-# Helper Functions used in the above step:
 
 def create_project_structure(project_root):
     directories = [
@@ -51,7 +50,7 @@ def setup_virtual_environment(project_root):
     pip_path = os.path.join(env_dir,"Scripts","pip.exe")
 
     generate_requirements_txt(project_root)
-    # Activate the environment (you can also use subprocess to activate it)
+    # Activate the environment 
     requirements_path = os.path.join(project_root, "requirements.txt")
     subprocess.check_call([pip_path,"install","-r",requirements_path])
 
@@ -74,17 +73,17 @@ def generate_requirements_txt(project_root):
 
 def setup_postgresql_with_podman():
     try:
-        # First, check if the container is running
+        
         result = subprocess.check_output(["podman", "ps", "-q", "-f", "name=postgres-container"])
         if result:
             print("PostgreSQL container is already running.")
         else:
             print("PostgreSQL container is not running.")
-            # If the container is stopped, start it
+           
             subprocess.check_call(["podman", "start", "postgres-container"])
             print("PostgreSQL container started.")
     except subprocess.CalledProcessError:
-        # If the container is not found (either stopped or doesn't exist), create and start a new one
+
         print("PostgreSQL container does not exist. Creating and starting the container...")
         try:
             subprocess.check_call([
